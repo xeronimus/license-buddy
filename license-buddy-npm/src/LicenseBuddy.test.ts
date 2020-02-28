@@ -5,6 +5,18 @@ const searchForDependency = (result: AnalysisResult, dependencyName: string) =>
         infos.some((info: Dependency) => info.name.includes(dependencyName))
     );
 
+test('analyze with license texts', async () => {
+    // this option is currently not exposed in the cli...
+
+    const lb = new LicenseBuddy('./');
+    const result: AnalysisResult = await lb.analyze({
+        includeLicenseText: true
+    });
+
+    expect(result).toBeDefined();
+    expect(Object.values(result.licenses)[0][0].licenseText).toBeDefined();
+});
+
 test('analyze development', async () => {
     const lb = new LicenseBuddy('./');
     const result: AnalysisResult = await lb.analyze({
@@ -35,7 +47,5 @@ test('analyze production', async () => {
 
 test('analyze and print', async () => {
     const lb = new LicenseBuddy('./');
-    const result: AnalysisResult = await lb.analyze();
-
-    expect(result).toBeDefined();
+    await lb.analyzeAndPrint();
 });
