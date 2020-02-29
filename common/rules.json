@@ -1,0 +1,19 @@
+{
+  "MIT": {
+    "aliases": [],
+    "whitelisted": true
+  },
+  "BSD": {
+    "aliases": [
+      "BSD-3-Clause",
+      "BSD-2-Clause"
+    ],
+    "aliasesPattern": [
+      "BSD-*"
+    ],
+    "whitelisted": true
+  },
+  "Apache-2.0": {
+    "whitelisted": false
+  }
+}

@@ -7,7 +7,7 @@
     "test": "jest",
     "build": "tsc",
     "prebuild": "npm run prettier",
-    "prettier": "prettier --single-quote --print-width 100 --arrow-parens always --tab-width 4 --no-bracket-spacing --write 'src/**/*.ts'"
+    "prettier": "prettier --single-quote --print-width 120 --arrow-parens always --tab-width 4 --no-bracket-spacing --write 'src/**/*.ts'"
   },
   "author": "",
   "license": "ISC",

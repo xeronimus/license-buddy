@@ -45,7 +45,12 @@ test('analyze production', async () => {
     expect(searchForDependency(result, 'jest@')).toBe(false);
 });
 
-test('analyze and print', async () => {
+test('analyze and printAnalysisResult', async () => {
     const lb = new LicenseBuddy('./');
     await lb.analyzeAndPrint();
+});
+
+test('analyze and check', async () => {
+    const lb = new LicenseBuddy('./');
+    await lb.analyzeAndCheck();
 });

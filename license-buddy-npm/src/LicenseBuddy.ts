@@ -1,9 +1,11 @@
 import path from 'path';
-import fs from 'fs';
 import chalk from 'chalk';
 
-import {init as initChecker, ModuleInfo, ModuleInfos} from 'license-checker';
-import {AnalysisResultPrinter} from './AnalysisResultPrinter';
+import {init as initChecker, ModuleInfos} from 'license-checker';
+import {ResultPrinter} from './ResultPrinter';
+import {RulesLoader} from './RulesLoader';
+import groupByLicense from './groupByLicense';
+import findViolations from './findViolations';
 
 /**
  *
@@ -16,7 +18,7 @@ export default class LicenseBuddy {
     }
 
     /**
-     * Analyze licenses in dependencies. will resolve to a AnalysisResult object containing information about detected licenses and which dependencies use these licenses
+     * Analyzes licenses in dependencies. will resolve to a AnalysisResult object containing information about detected licenses and which dependencies use these licenses
      */
     public async analyze(options: AnalyzeOpts = {}): Promise<AnalysisResult> {
         console.log('Analyzing project in folder ' + chalk.blue(this.rootPath));
@@ -32,9 +34,7 @@ export default class LicenseBuddy {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(
-                            LicenseBuddy.groupByLicense(moduleInfos, options.includeLicenseText)
-                        );
+                        resolve(groupByLicense(moduleInfos, options.includeLicenseText));
                     }
                 }
             );
@@ -42,102 +42,25 @@ export default class LicenseBuddy {
     }
 
     /**
-     *
+     * Analyzes licenses in dependencies. Prints result (information of all used licenses)
      */
     public async analyzeAndPrint(options: AnalyzeOpts = {}): Promise<void> {
         const result = await this.analyze(options);
-        AnalysisResultPrinter.print(result, options.verbose);
+        ResultPrinter.printAnalysisResult(result, options.verbose);
     }
 
     /**
-     *
+     * Analyzes licenses in dependencies. Print licenses that are in violation of rules (recommendations)
      */
-    public async check(): Promise<void> {
+    public async analyzeAndCheck(): Promise<void> {
         const result = await this.analyze();
-    }
 
-    /**
-     * loop given packages and groups them by license
-     */
-    static groupByLicense(
-        modules: ModuleInfos,
-        includeLicenseTexts: boolean = false
-    ): AnalysisResult {
-        const entries = Object.entries(modules);
+        // TODO: when building for production (use via cli), how to pack rules ?  build step that copies rules.json next to cli.js ?
+        // TODO: dicusss whether one should be able to specify rules file to use...
+        const rules = await RulesLoader.loadRulesFromJsonFile(path.resolve('../common/rules.json'));
+        const violations = findViolations(result, rules);
 
-        const licenseMap: LicenseMap = entries.reduce((result: LicenseMap, entry) => {
-            const moduleName = entry[0];
-            const moduleInfo: ModuleInfo = entry[1];
-
-            if (Array.isArray(moduleInfo.licenses)) {
-                return this.addDependenciesToMap(
-                    result,
-                    moduleInfo.licenses,
-                    moduleName,
-                    moduleInfo.repository,
-                    moduleInfo.licenseFile,
-                    includeLicenseTexts
-                );
-            } else {
-                return this.addDependencyToMap(
-                    result,
-                    moduleInfo.licenses,
-                    moduleName,
-                    moduleInfo.repository,
-                    moduleInfo.licenseFile,
-                    includeLicenseTexts
-                );
-            }
-        }, {});
-
-        return {
-            licenses: licenseMap,
-            dependencyCount: entries.length
-        };
-    }
-
-    static addDependenciesToMap(
-        result: LicenseMap,
-        moduleLicenses: string[],
-        moduleName: string,
-        moduleRepo: string,
-        licenseFile: string,
-        includeLicenseTexts: boolean
-    ): LicenseMap {
-        return moduleLicenses.reduce(
-            (innerResult: LicenseMap, license) =>
-                this.addDependencyToMap(
-                    innerResult,
-                    license,
-                    moduleName,
-                    moduleRepo,
-                    licenseFile,
-                    includeLicenseTexts
-                ),
-            result
-        );
-    }
-
-    static addDependencyToMap(
-        result: LicenseMap,
-        moduleLicense: string,
-        moduleName: string,
-        moduleRepo: string,
-        licenseFile: string,
-        includeLicenseTexts: boolean
-    ): LicenseMap {
-        if (!result[moduleLicense]) {
-            result[moduleLicense] = [];
-        }
-
-        const newPackageEntry: Dependency = {name: moduleName, repo: moduleRepo};
-
-        if (includeLicenseTexts && licenseFile) {
-            newPackageEntry.licenseText = fs.readFileSync(licenseFile, 'utf-8');
-        }
-        result[moduleLicense].push(newPackageEntry);
-
-        return result;
+        ResultPrinter.printViolations(violations);
     }
 }
 
@@ -164,6 +87,27 @@ export interface AnalysisResult {
     dependencyCount: number;
 }
 
-interface LicenseMap {
+export interface LicenseMap {
     [licenseName: string]: Dependency[];
+}
+
+export interface Rules {
+    [licenseName: string]: Rule;
+}
+
+export interface Rule {
+    aliases?: string[];
+    aliasesPattern?: string[];
+    whitelisted: boolean;
+}
+
+export interface Violation {
+    licenseName: string;
+    type: ViolationType;
+    dependencies: Dependency[];
+}
+
+export enum ViolationType {
+    noRule = 'NO_RULE',
+    notWhitelisted = 'NOT_WHITELISTED'
 }
