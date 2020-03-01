@@ -59,9 +59,13 @@ yargs
                     default: false,
                     describe: 'Only include development dependencies',
                     type: 'boolean'
+                })
+                .option('c', {
+                    alias: 'ci',
+                    default: false,
+                    describe: 'CI mode: fail on violations',
+                    type: 'boolean'
                 });
-
-            // TODO:  add option to fail on violations
             // TODO:  discuss whether we should add option to specify rules file
         },
         checkHandler
@@ -81,5 +85,10 @@ async function analyzeHandler(argv: any) {
 
 async function checkHandler(argv: any) {
     const lb = new LicenseBuddy(argv.rootPath);
-    return lb.analyzeAndCheck();
+    const violations = await lb.analyzeAndCheck();
+
+    if (argv.ci && violations.length > 0) {
+        console.error(`Violations found & CI flag is set: Exiting with code 1`);
+        process.exit(1);
+    }
 }

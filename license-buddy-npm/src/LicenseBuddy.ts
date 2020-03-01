@@ -52,7 +52,7 @@ export default class LicenseBuddy {
     /**
      * Analyzes licenses in dependencies. Print licenses that are in violation of rules (recommendations)
      */
-    public async analyzeAndCheck(): Promise<void> {
+    public async analyzeAndCheck(): Promise<Violation[]> {
         const result = await this.analyze();
 
         // TODO: when building for production (use via cli), how to pack rules ?  build step that copies rules.json next to cli.js ?
@@ -61,6 +61,8 @@ export default class LicenseBuddy {
         const violations = findViolations(result, rules);
 
         ResultPrinter.printViolations(violations);
+
+        return violations;
     }
 }
 

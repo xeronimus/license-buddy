@@ -52,5 +52,7 @@ test('analyze and printAnalysisResult', async () => {
 
 test('analyze and check', async () => {
     const lb = new LicenseBuddy('./');
-    await lb.analyzeAndCheck();
+    const violations = await lb.analyzeAndCheck();
+
+    expect(violations).toBeDefined();
 });
