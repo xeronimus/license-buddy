@@ -1,13 +1,18 @@
 {
   "name": "license-buddy-npm",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "License Buddy helps you to stay OSS aware!",
+  "bin": "./bin/license-buddy.js",
+  "repository": "xeronimus/license-buddy",
+  "main": "./index.js",
+  "engines": {
+    "node": ">=8"
+  },
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "prebuild": "npm run prettier",
-    "prettier": "prettier --single-quote --print-width 120 --arrow-parens always --tab-width 4 --no-bracket-spacing --write 'src/**/*.ts'"
+    "prebuild": "npm run format",
+    "format": "prettier --single-quote --print-width 120 --arrow-parens always --tab-width 4 --no-bracket-spacing --write '{src/**/*.ts,bin/**/*.ts}'"
   },
   "author": "",
   "license": "ISC",
