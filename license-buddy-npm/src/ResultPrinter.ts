@@ -1,7 +1,7 @@
 import {AnalysisResult, Dependency, Violation, ViolationType} from './LicenseBuddy';
 import chalk from 'chalk';
 
-export class ResultPrinter {
+export default class ResultPrinter {
     /**
      *
      * @param {AnalysisResult} licenseInfos

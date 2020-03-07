@@ -1,14 +1,25 @@
+import path from 'path';
 import fs from 'fs';
 import {Rules} from './LicenseBuddy';
 
-export class RulesLoader {
-    public static async loadRulesFromJsonFile(filePath: string): Promise<Rules> {
-        const fileContent = await RulesLoader.readFilePromise(filePath);
+export default class RulesLoader {
+    public static async loadRules(cwd: string): Promise<Rules> {
+        const config = await this.loadFromPackageJson(cwd);
 
+        if (config) {
+            return <Rules>config;
+        } else {
+            throw new Error(`Cannot load Rules from  ${cwd}`);
+        }
+    }
+
+    private static async loadFromPackageJson(cwd: string): Promise<unknown> {
         try {
-            return <Rules>JSON.parse(fileContent);
+            const pkgFileContent = await this.readFilePromise(path.join(cwd, 'package.json'));
+            const pkg = JSON.parse(pkgFileContent);
+            return pkg.licenseBuddy || null;
         } catch (err) {
-            throw new Error(`Cannot load Rules from  ${filePath}`);
+            return null;
         }
     }
 

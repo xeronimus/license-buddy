@@ -2,8 +2,8 @@ import path from 'path';
 import chalk from 'chalk';
 
 import {init as initChecker, ModuleInfos} from 'license-checker';
-import {ResultPrinter} from './ResultPrinter';
-import {RulesLoader} from './RulesLoader';
+import ResultPrinter from './ResultPrinter';
+import RulesLoader from './RulesLoader';
 import groupByLicense from './groupByLicense';
 import findViolations from './findViolations';
 
@@ -12,9 +12,11 @@ import findViolations from './findViolations';
  */
 export default class LicenseBuddy {
     rootPath: string;
+    cwd: string;
 
-    constructor(rootPath: string) {
+    constructor(rootPath: string, cwd: string) {
         this.rootPath = path.resolve(rootPath);
+        this.cwd = cwd;
     }
 
     /**
@@ -55,9 +57,7 @@ export default class LicenseBuddy {
     public async analyzeAndCheck(): Promise<Violation[]> {
         const result = await this.analyze();
 
-        // TODO: when building for production (use via cli), how to pack rules ?  build step that copies rules.json next to cli.js ?
-        // TODO: dicusss whether one should be able to specify rules file to use...
-        const rules = await RulesLoader.loadRulesFromJsonFile(path.resolve('../common/rules.json'));
+        const rules = await RulesLoader.loadRules(this.cwd);
         const violations = findViolations(result, rules);
 
         ResultPrinter.printViolations(violations);

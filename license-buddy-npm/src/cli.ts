@@ -77,7 +77,7 @@ export default function cli(args: string[]) {
 }
 
 async function analyzeHandler(argv: any) {
-    const lb = new LicenseBuddy(argv.rootPath);
+    const lb = new LicenseBuddy(argv.rootPath, process.cwd());
     return lb.analyzeAndPrint({
         verbose: argv.verbose,
         production: argv.production,
@@ -86,7 +86,7 @@ async function analyzeHandler(argv: any) {
 }
 
 async function checkHandler(argv: any) {
-    const lb = new LicenseBuddy(argv.rootPath);
+    const lb = new LicenseBuddy(argv.rootPath, process.cwd());
     const violations = await lb.analyzeAndCheck();
 
     if (argv.ci && violations.length > 0) {

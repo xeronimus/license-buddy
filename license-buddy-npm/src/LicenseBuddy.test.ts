@@ -8,7 +8,7 @@ const searchForDependency = (result: AnalysisResult, dependencyName: string) =>
 test('analyze with license texts', async () => {
     // this option is currently not exposed in the cli...
 
-    const lb = new LicenseBuddy('./');
+    const lb = new LicenseBuddy('./', '');
     const result: AnalysisResult = await lb.analyze({
         includeLicenseText: true
     });
@@ -18,7 +18,7 @@ test('analyze with license texts', async () => {
 });
 
 test('analyze development', async () => {
-    const lb = new LicenseBuddy('./');
+    const lb = new LicenseBuddy('./', '');
     const result: AnalysisResult = await lb.analyze({
         development: true
     });
@@ -33,7 +33,7 @@ test('analyze development', async () => {
 });
 
 test('analyze production', async () => {
-    const lb = new LicenseBuddy('./');
+    const lb = new LicenseBuddy('./', '');
     const result: AnalysisResult = await lb.analyze({
         production: true
     });
@@ -46,12 +46,12 @@ test('analyze production', async () => {
 });
 
 test('analyze and printAnalysisResult', async () => {
-    const lb = new LicenseBuddy('./');
+    const lb = new LicenseBuddy('./', '');
     await lb.analyzeAndPrint();
 });
 
 test('analyze and check', async () => {
-    const lb = new LicenseBuddy('./');
+    const lb = new LicenseBuddy('./', process.cwd());
     const violations = await lb.analyzeAndCheck();
 
     expect(violations).toBeDefined();
