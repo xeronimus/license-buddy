@@ -1,6 +1,6 @@
 {
   "name": "license-buddy-npm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "License Buddy helps you to stay OS License aware!",
   "bin": "./bin/license-buddy.js",
   "repository": "xeronimus/license-buddy",
