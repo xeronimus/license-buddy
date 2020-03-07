@@ -2,4 +2,7 @@
 node_modules
 
 # compiled files
-lib
+src/*.js
+src/*.js.map
+bin/*.js
+bin/*.js.map
