@@ -1,6 +1,6 @@
 {
   "name": "license-buddy-npm",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "License Buddy helps you to stay OS License aware!",
   "bin": {
     "license-buddy": "./bin/license-buddy.js"
@@ -16,7 +16,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "prebuild": "npm run format",
+    "listlicenses": "license-buddy list --production",
+    "prebuild": "npm run format && npm run listlicenses",
     "format": "prettier --single-quote --print-width 120 --arrow-parens always --tab-width 4 --no-bracket-spacing --write '{src/**/*.ts,bin/**/*.ts}'"
   },
   "author": "",
@@ -26,7 +27,8 @@
     "jest": "^25.1.0",
     "prettier": "^1.19.1",
     "ts-jest": "^25.2.1",
-    "typescript": "^3.8.2"
+    "typescript": "^3.8.2",
+    "license-buddy-npm": "0.0.3"
   },
   "dependencies": {
     "@types/license-checker": "^25.0.0",
