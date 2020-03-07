@@ -2,16 +2,16 @@
   "name": "license-buddy-npm",
   "version": "0.0.2",
   "description": "License Buddy helps you to stay OS License aware!",
-  "bin": "./bin/license-buddy.js",
+  "bin": {
+    "license-buddy": "./bin/license-buddy.js"
+  },
   "repository": "xeronimus/license-buddy",
   "engines": {
     "node": ">=8"
   },
   "files": [
-    "LICENSE",
-    "README.md",
-    "bin/*.js",
-    "src/**/*.js"
+    "bin/!(*.test).js",
+    "src/!(*.test).js"
   ],
   "scripts": {
     "test": "jest",
