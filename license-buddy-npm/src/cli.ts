@@ -12,9 +12,10 @@ export default function cli(args: string[]) {
                 yargs
                     .positional('rootPath', {
                         type: 'string',
-                        describe: 'the path to the root directory, where your "package.json" lies'
+                        describe: 'the path to the root directory, where your "package.json" lies',
+                        default: './',
+                        defaultDescription: 'The current working directory'
                     })
-                    .demand('rootPath')
                     .option('v', {
                         alias: 'verbose',
                         default: false,
