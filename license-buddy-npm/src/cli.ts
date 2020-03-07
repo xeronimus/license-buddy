@@ -1,72 +1,64 @@
-import LicenseBuddy from './LicenseBuddy';
+import {PositionalOptions, Options} from 'yargs';
 import yargs from 'yargs';
+
+import LicenseBuddy from './LicenseBuddy';
+
+const YCFG_POS_ROOT_PATH: PositionalOptions = {
+    type: 'string',
+    describe: 'the path to the root directory, where your "package.json" lies',
+    default: './'
+};
+const YCFG_OPT_PROD: Options = {
+    alias: 'production',
+    default: false,
+    describe: 'Only include production dependencies',
+    type: 'boolean'
+};
+const YCFG_OPT_DEV: Options = {
+    alias: 'development',
+    default: false,
+    describe: 'Only include development dependencies',
+    type: 'boolean'
+};
+const YCFG_OPT_VERB: Options = {
+    alias: 'verbose',
+    default: false,
+    describe: 'Print out more detailed information',
+    type: 'boolean'
+};
+const YCFG_OPT_CI: Options = {
+    alias: 'ci',
+    default: false,
+    describe: 'CI mode: fail on violations',
+    type: 'boolean'
+};
 
 export default function cli(args: string[]) {
     yargs
         .scriptName('license-buddy-npm')
         .usage('Usage: $0 <cmd> [args]')
         .command(
-            'analyze [rootPath]',
-            'Analyze licenses in your npm dependency tree',
+            'list [rootPath]',
+            'Lists licenses in your npm dependency tree',
             (yargs) => {
                 yargs
-                    .positional('rootPath', {
-                        type: 'string',
-                        describe: 'the path to the root directory, where your "package.json" lies',
-                        default: './',
-                        defaultDescription: 'The current working directory'
-                    })
-                    .option('v', {
-                        alias: 'verbose',
-                        default: false,
-                        describe: 'Print out more detailed information',
-                        type: 'boolean'
-                    })
-                    .option('p', {
-                        alias: 'production',
-                        default: false,
-                        describe: 'Only include production dependencies',
-                        type: 'boolean'
-                    })
-                    .option('d', {
-                        alias: 'development',
-                        default: false,
-                        describe: 'Only include development dependencies',
-                        type: 'boolean'
-                    });
+                    .positional('rootPath', YCFG_POS_ROOT_PATH)
+                    .option('v', YCFG_OPT_VERB)
+                    .option('p', YCFG_OPT_PROD)
+                    .option('d', YCFG_OPT_DEV);
             },
-            analyzeHandler
+            listHandler
         )
 
         .command(
             'check [rootPath]',
-            'Check licenses in your npm dependency tree against recommendations. Warn if problematic license is used.',
+            'Check licenses in your npm dependency tree against configured whitelist. Warn if problematic license is used.',
             (yargs) => {
                 yargs
-                    .positional('rootPath', {
-                        type: 'string',
-                        describe: 'the path to the root directory, where your "package.json" lies'
-                    })
-                    .demand('rootPath')
-                    .option('p', {
-                        alias: 'production',
-                        default: false,
-                        describe: 'Only include production dependencies',
-                        type: 'boolean'
-                    })
-                    .option('d', {
-                        alias: 'development',
-                        default: false,
-                        describe: 'Only include development dependencies',
-                        type: 'boolean'
-                    })
-                    .option('c', {
-                        alias: 'ci',
-                        default: false,
-                        describe: 'CI mode: fail on violations',
-                        type: 'boolean'
-                    });
-                // TODO:  discuss whether we should add option to specify rules file
+                    .positional('rootPath', YCFG_POS_ROOT_PATH)
+                    .option('p', YCFG_OPT_PROD)
+                    .option('d', YCFG_OPT_DEV)
+                    .option('c', YCFG_OPT_CI);
             },
             checkHandler
         )
@@ -76,9 +68,9 @@ export default function cli(args: string[]) {
         .parse(args);
 }
 
-async function analyzeHandler(argv: any) {
+async function listHandler(argv: any) {
     const lb = new LicenseBuddy(argv.rootPath, process.cwd());
-    return lb.analyzeAndPrint({
+    return lb.list({
         verbose: argv.verbose,
         production: argv.production,
         development: argv.development

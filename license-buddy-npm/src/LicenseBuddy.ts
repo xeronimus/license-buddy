@@ -46,7 +46,7 @@ export default class LicenseBuddy {
     /**
      * Analyzes licenses in dependencies. Prints result (information of all used licenses)
      */
-    public async analyzeAndPrint(options: AnalyzeOpts = {}): Promise<void> {
+    public async list(options: AnalyzeOpts = {}): Promise<void> {
         const result = await this.analyze(options);
         ResultPrinter.printAnalysisResult(result, options.verbose);
     }
