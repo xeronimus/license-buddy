@@ -1,5 +1,5 @@
 {
-  "name": "license-buddy-npm",
+  "name": "license-buddy",
   "version": "0.0.3",
   "description": "License Buddy helps you to stay OS License aware!",
   "bin": {
@@ -27,8 +27,7 @@
     "jest": "^25.1.0",
     "prettier": "^1.19.1",
     "ts-jest": "^25.2.1",
-    "typescript": "^3.8.2",
-    "license-buddy-npm": "0.0.3"
+    "typescript": "^3.8.2"
   },
   "dependencies": {
     "@types/license-checker": "^25.0.0",
